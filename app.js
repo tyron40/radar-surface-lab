@@ -12,6 +12,7 @@ const legend = {
   candidates: 'Flood candidates · mint marks newly dark pixels. Blue-black marks missing data.',
 };
 let scene = sampleScene();
+let satelliteScene;
 let mode = 'candidates';
 let loadAttempt = 0;
 let summary;
@@ -47,7 +48,11 @@ function render() {
   const { width, height, title, synthetic } = scene;
   summary = { title, synthetic, width, height, minimumDropDb: minimumDrop, darkCutoffDb: darkCutoff,
     comparablePixels: comparable, candidatePixels: candidates, candidateFraction: share };
-  byId('source').textContent = `${title} · ${synthetic ? 'Synthetic sample' : 'Imported scene'}`;
+  const isSatelliteExample = scene === satelliteScene;
+  const sourceLabel = isSatelliteExample ? 'Satellite example' : synthetic ? 'Synthetic sample' : 'Imported scene';
+  byId('source').textContent = `${title} · ${sourceLabel}`;
+  byId('satellite-credit').hidden = !isSatelliteExample;
+  if (isSatelliteExample) summary.provenance = scene.provenance;
   byId('dimensions').textContent = `${width} × ${height} px`;
   byId('dropValue').textContent = `${minimumDrop} dB`;
   byId('ceilingValue').textContent = `${darkCutoff} dB`;
@@ -101,16 +106,42 @@ byId('upload').addEventListener('change', async event => {
   }
 });
 
-byId('demo').addEventListener('click', () => {
-  loadAttempt++;
-  scene = sampleScene();
+function selectBuiltInScene(next) {
+  scene = next;
   mode = 'candidates';
   byId('upload').value = '';
   byId('drop').value = '4';
   byId('ceiling').value = '-17';
+  render();
+}
+
+async function loadSatellite() {
+  const attempt = ++loadAttempt;
+  const status = byId('status');
+  status.classList.remove('error');
+  status.textContent = 'Loading satellite example…';
+  try {
+    if (!satelliteScene) {
+      const response = await fetch(new URL('./lumberton-florence.json', import.meta.url));
+      if (!response.ok) throw new Error('Satellite example unavailable');
+      satelliteScene = validateScene(await response.json());
+    }
+    if (attempt !== loadAttempt) return;
+    selectBuiltInScene(satelliteScene);
+    status.textContent = '';
+  } catch {
+    if (attempt !== loadAttempt) return;
+    status.classList.add('error');
+    status.textContent = 'Could not load the satellite example. Use the synthetic sample or try again.';
+  }
+}
+
+byId('satellite').addEventListener('click', loadSatellite);
+byId('demo').addEventListener('click', () => {
+  loadAttempt++;
   byId('status').textContent = '';
   byId('status').classList.remove('error');
-  render();
+  selectBuiltInScene(sampleScene());
 });
 
 byId('export').addEventListener('click', () => {
@@ -122,3 +153,4 @@ byId('export').addEventListener('click', () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 render();
+loadSatellite();

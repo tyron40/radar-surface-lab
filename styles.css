@@ -15,6 +15,7 @@ input[type=range]{margin:0 0 .85rem}button{font:650 .83rem/1.2 system-ui,sans-se
 button:hover{border-color:var(--mint)}:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
 button[aria-pressed=true],.primary{background:var(--mint);border-color:var(--mint);color:#0c2922}
 .primary{width:100%;margin-top:1rem}
+.source-credit{margin-top:.55rem}.source-credit a{color:var(--mint)}.scene-options{margin-top:.85rem}
 .source{border-left:2px solid var(--mint);padding-left:.65rem;font-size:.85rem;overflow-wrap:anywhere}
 #status{font-size:.8rem;margin-top:.55rem}#status:empty{display:none}#status.error{color:#ffc3b4}
 hr{border:0;border-top:1px solid var(--line);margin:1.2rem 0}

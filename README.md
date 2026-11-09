@@ -1,6 +1,14 @@
 # Radar Surface Lab
 
-A browser dashboard and GeoTIFF preparation tool for comparing two synthetic aperture radar (SAR) backscatter observations. The dashboard runs locally and opens with a labeled synthetic river scene. It supports before, after, signed change, and flood candidate layers, interactive thresholds, and a downloadable JSON summary. Imported scenes are processed in the browser.
+A browser dashboard and GeoTIFF preparation tool for comparing two synthetic aperture radar (SAR) backscatter observations. The dashboard opens with a real satellite example and also includes a labeled synthetic river scene. It supports before, after, signed change, and flood candidate layers, interactive thresholds, and a downloadable JSON summary. Imported scenes are processed in the browser.
+
+## Start with a real scene
+
+Open the [live dashboard](https://radar-surface-lab.vercel.app/) to compare the Lumber River around Lumberton, North Carolina, before and after Hurricane Florence. Switch among the four raster views, adjust the thresholds, and download the analysis summary. Select **Load synthetic sample** to switch to the simulated training scene.
+
+The bundled example uses same-orbit Sentinel-1A VV observations on September 7 and 19, 2018 (ascending relative orbit 77). The source observations are listed in the scene JSON. A 3.6 km square was aligned to a common 25 m grid in UTM zone 17N by averaging valid linear backscatter values, then converting to dB and rounding to one decimal place. Dates and source IDs are included in the downloaded summary.
+
+Contains modified Copernicus Sentinel data (2018). Radiometrically terrain-corrected data are provided by the [Microsoft Planetary Computer Sentinel-1 RTC collection](https://planetarycomputer.microsoft.com/dataset/sentinel-1-rtc) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See the [National Weather Service event summary](https://www.weather.gov/ilm/HurricaneFlorence) for the historical flood context.
 
 ## Run locally
 
@@ -10,7 +18,7 @@ From the repository root:
 python -m http.server 8000 --bind 127.0.0.1
 ```
 
-Open <http://127.0.0.1:8000>. The dashboard can also run on a static web host. Publish `index.html`, `styles.css`, `app.js`, and `radar.mjs` together in the same directory.
+Open <http://127.0.0.1:8000>. The dashboard can also run on a static web host. Publish `index.html`, `styles.css`, `app.js`, `radar.mjs`, and `lumberton-florence.json` together in the same directory.
 
 ## Use satellite data
 

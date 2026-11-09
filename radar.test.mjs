@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { analyze, sampleScene, validateScene } from './radar.mjs';
 
 test('detects inclusive drop and cutoff, excludes existing water and missing observations', () => {
@@ -20,4 +21,15 @@ test('validates the generated sample and rejects malformed imports', () => {
   assert.throws(() => validateScene({ ...scene, before: ['-22'] }), /grid/);
   assert.throws(() => validateScene({ ...scene, width: 769 }), /dimensions/);
   assert.throws(() => validateScene({ ...scene, units: 'power' }), /in dB/);
+});
+
+test('the bundled satellite scene is comparable and includes its provenance', async () => {
+  const asset = new URL('./lumberton-florence.json', import.meta.url);
+  const scene = validateScene(JSON.parse(await readFile(asset, 'utf8')));
+  assert.equal(scene.synthetic, false);
+  assert.equal(scene.provenance.relativeOrbit, 77);
+  assert.equal(scene.provenance.observations.length, 2);
+  const result = analyze(scene, 4, -17);
+  assert.ok(result.comparable > 0);
+  assert.ok(result.candidates > 0 && result.candidates < result.comparable);
 });

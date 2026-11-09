@@ -21,9 +21,18 @@
         <p class="eyebrow">01 / INPUT</p>
         <h2>Scene pair</h2>
         <p id="source" class="source"></p>
+        <p id="satellite-credit" class="muted source-credit" hidden>
+          Sentinel-1A VV · Sep 7 and Sep 19, 2018 · relative orbit 77.
+          Contains modified Copernicus Sentinel data (2018), via
+          <a href="https://planetarycomputer.microsoft.com/dataset/sentinel-1-rtc">Microsoft Planetary Computer</a>
+          (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).
+        </p>
+        <div class="modes scene-options" role="group" aria-label="Built-in scenes">
+          <button id="satellite" type="button">Load satellite example</button>
+          <button id="demo" type="button">Load synthetic sample</button>
+        </div>
         <label class="file-label" for="upload">Load a scene pair (.json)</label>
         <input id="upload" type="file" accept=".json,application/json">
-        <button id="demo" type="button">Reset to sample</button>
         <p id="status" role="status"></p>
         <hr>
         <p class="eyebrow">02 / ANALYSIS</p>
