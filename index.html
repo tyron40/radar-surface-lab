@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare paired radar backscatter grids and explore surface change.">
+  <title>Radar Surface Lab</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header><div class="wordmark"><span aria-hidden="true">◉</span> Radar Surface Lab</div><small>EARTH OBSERVATION / 01</small></header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">SYNTHETIC APERTURE RADAR</p>
+      <h1>Surface change explorer</h1>
+      <p>Compare two radar backscatter observations and screen for newly dark surfaces that may indicate open water.</p>
+    </section>
+    <section class="workspace" aria-label="Analysis workspace">
+      <aside class="panel controls">
+        <p class="eyebrow">01 / INPUT</p>
+        <h2>Scene pair</h2>
+        <p id="source" class="source"></p>
+        <label class="file-label" for="upload">Load a scene pair (.json)</label>
+        <input id="upload" type="file" accept=".json,application/json">
+        <button id="demo" type="button">Reset to sample</button>
+        <p id="status" role="status"></p>
+        <hr>
+        <p class="eyebrow">02 / ANALYSIS</p>
+        <h2>Flood screening</h2>
+        <label for="drop">Minimum backscatter drop <output id="dropValue" for="drop"></output></label>
+        <input id="drop" type="range" min="1" max="20" step="0.5" value="4">
+        <label for="ceiling">Dark-surface cutoff <output id="ceilingValue" for="ceiling"></output></label>
+        <input id="ceiling" type="range" min="-32" max="-5" step="0.5" value="-17">
+        <p class="muted">Candidate pixels start above the cutoff, end at or below it, and meet the minimum drop.</p>
+        <button id="export" type="button" class="primary">Download summary</button>
+      </aside>
+      <section class="panel results" aria-label="Radar views">
+        <div class="result-head"><div><p class="eyebrow">03 / RESULTS</p><h2>Backscatter comparison</h2></div><p id="dimensions" class="badge"></p></div>
+        <div class="modes" role="group" aria-label="Raster layer">
+          <button type="button" data-mode="before" aria-pressed="false">Before</button>
+          <button type="button" data-mode="after" aria-pressed="false">After</button>
+          <button type="button" data-mode="change" aria-pressed="false">Change</button>
+          <button type="button" data-mode="candidates" aria-pressed="true">Flood candidates</button>
+        </div>
+        <div class="raster"><canvas id="raster" role="img" aria-label="Raster view of flood candidates"></canvas></div>
+        <p id="legend" class="legend"></p>
+        <dl class="metrics"><div><dt>Comparable pixels</dt><dd id="comparable"></dd></div><div><dt>Candidate pixels</dt><dd id="candidates"></dd></div><div><dt>Candidate share</dt><dd id="share"></dd></div></dl>
+      </section>
+    </section>
+    <footer>Screening output requires independent validation. Terrain shadow, speckle, and changes in land cover can affect the result.</footer>
+  </main>
+</body>
+</html>
