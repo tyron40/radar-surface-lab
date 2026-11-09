@@ -1,0 +1,6 @@
+{
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "mkdir -p dist && cp index.html styles.css app.js radar.mjs dist/",
+  "outputDirectory": "dist"
+}
