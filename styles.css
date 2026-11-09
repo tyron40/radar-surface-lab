@@ -26,3 +26,10 @@ canvas{display:block;width:auto;height:auto;max-width:100%;max-height:470px;imag
 .legend{margin-top:.65rem}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin:1rem 0 0}.metrics div{border-top:1px solid var(--line);padding-top:.5rem}.metrics dt{font-size:.76rem;color:var(--muted)}.metrics dd{margin:0;color:var(--mint);font-size:clamp(1.05rem,2.5vw,1.6rem);font-weight:700}
 footer{padding:1.15rem 0 2rem}
 @media(max-width:730px){.workspace{grid-template-columns:1fr}.intro{padding-top:1.8rem}header small{display:none}}
+
+.own-files{margin-top:.8rem;border-top:1px solid var(--line);padding-top:.7rem}
+.own-files summary{cursor:pointer;font-weight:700;color:var(--mint);font-size:.9rem}
+.own-files form{margin:.65rem 0 1rem;padding-bottom:.85rem;border-bottom:1px solid var(--line)}
+.own-files a{color:var(--mint)}
+.own-files select{display:block;width:100%;color:var(--text);background:#19292f;border:1px solid var(--line);border-radius:.4rem;padding:.45rem;font:inherit;font-size:.82rem;margin-bottom:.5rem}
+.own-files form button{margin-top:.7rem}

@@ -10,21 +10,27 @@ The bundled example uses same-orbit Sentinel-1A VV observations on September 7 a
 
 Contains modified Copernicus Sentinel data (2018). Radiometrically terrain-corrected data are provided by the [Microsoft Planetary Computer Sentinel-1 RTC collection](https://planetarycomputer.microsoft.com/dataset/sentinel-1-rtc) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See the [National Weather Service event summary](https://www.weather.gov/ilm/HurricaneFlorence) for the historical flood context.
 
+## Analyze your files for free
+
+Open **Analyze your own files** on the [live dashboard](https://radar-surface-lab.vercel.app/), choose a before and an after GeoTIFF, pick linear power or dB, and select **Analyze GeoTIFFs**. Use single-band radar GeoTIFFs with the same polarization, coordinate system, pixel grid, and dimensions. The dashboard checks grid alignment, applies embedded nodata and internal masks, and uses a centered crop for images larger than 768 pixels on either side. It reads your files directly on your device. The dashboard has no account requirement, API keys, or paid analysis service.
+
 ## Run locally
 
-From the repository root:
+Build with Node.js 24 and serve the resulting static files:
 
 ```sh
-python -m http.server 8000 --bind 127.0.0.1
+npm ci
+npm run build
+python -m http.server 8000 --bind 127.0.0.1 --directory dist
 ```
 
-Open <http://127.0.0.1:8000>. The dashboard can also run on a static web host. Publish `index.html`, `styles.css`, `app.js`, `radar.mjs`, and `lumberton-florence.json` together in the same directory.
+Open <http://127.0.0.1:8000>. The `dist` directory can also run on any static host. Node and Python are only needed for this local setup.
 
-## Use satellite data
+## Find and prepare satellite data
 
 1. Find two [NASA OPERA RTC-S1](https://www.jpl.nasa.gov/go/opera/products/rtc-product/) Sentinel-1 backscatter products for the same area via the [Alaska Satellite Facility](https://search.asf.alaska.edu/). Use the same polarization and comparable acquisition geometry, preferably the same relative orbit and burst footprint.
 2. Use aligned, terrain-corrected, single-band GeoTIFFs with the same CRS, transform, and dimensions. Mask invalid areas such as radar shadow and layover using the product quality data before running the converter. The converter respects the supplied GeoTIFF masks and nodata values.
-3. Install the converter dependency in a Python 3.12 environment and create a scene file:
+3. For a specific crop or an offline JSON file, install the converter dependency in a Python 3.12 environment and create a scene file:
 
 ```sh
 python -m pip install -r requirements.txt

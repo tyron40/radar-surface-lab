@@ -1,0 +1,12 @@
+{
+  "name": "radar-surface-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "geotiff": "3.0.5"
+  }
+}

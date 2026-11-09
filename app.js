@@ -15,6 +15,7 @@ let scene = sampleScene();
 let satelliteScene;
 let mode = 'candidates';
 let loadAttempt = 0;
+let geoTiffLoad;
 let summary;
 
 function grayscale(db) {
@@ -53,6 +54,7 @@ function render() {
   byId('source').textContent = `${title} · ${sourceLabel}`;
   byId('satellite-credit').hidden = !isSatelliteExample;
   if (isSatelliteExample) summary.provenance = scene.provenance;
+  if (scene.crop) Object.assign(summary, { crop: scene.crop, crs: scene.crs, transform: scene.transform });
   byId('dimensions').textContent = `${width} × ${height} px`;
   byId('dropValue').textContent = `${minimumDrop} dB`;
   byId('ceilingValue').textContent = `${darkCutoff} dB`;
@@ -85,12 +87,18 @@ for (const button of modes) {
 }
 for (const id of ['drop', 'ceiling']) byId(id).addEventListener('input', render);
 
+function beginLoad() {
+  geoTiffLoad?.abort();
+  const status = byId('status');
+  status.classList.remove('error');
+  return ++loadAttempt;
+}
+
 byId('upload').addEventListener('change', async event => {
   const file = event.currentTarget.files[0];
   if (!file) return;
-  const attempt = ++loadAttempt;
+  const attempt = beginLoad();
   const status = byId('status');
-  status.classList.remove('error');
   status.textContent = 'Reading scene…';
   try {
     if (file.size > MAX_FILE_BYTES) throw new Error('Scene files must be 32 MiB or smaller.');
@@ -106,6 +114,45 @@ byId('upload').addEventListener('change', async event => {
   }
 });
 
+byId('geotiff-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const before = byId('before-file').files[0];
+  const after = byId('after-file').files[0];
+  if (!before || !after) return;
+  const units = byId('raster-units').value;
+  const attempt = beginLoad();
+  const controller = new AbortController();
+  geoTiffLoad = controller;
+  const status = byId('status');
+  status.textContent = 'Reading GeoTIFFs on this device…';
+
+  try {
+    const [{ readGeoTiffPair }] = await Promise.all([
+      import('./geotiff-import.mjs'),
+      import('./geotiff.js'),
+    ]);
+    let pair;
+    try {
+      pair = await Promise.all([before, after].map(file => globalThis.GeoTIFF.fromBlob(file, controller.signal)));
+    } catch {
+      throw new Error('Could not open these files. Choose two valid GeoTIFFs.');
+    }
+    const next = await readGeoTiffPair(...pair, units, controller.signal);
+    if (attempt !== loadAttempt) return;
+    scene = next;
+    mode = 'candidates';
+    render();
+    const cropped = next.width < next.crop.sourceWidth || next.height < next.crop.sourceHeight;
+    status.textContent = cropped ? `GeoTIFFs loaded. Showing a centered ${next.width} × ${next.height} pixel crop.` : 'GeoTIFFs loaded.';
+  } catch (error) {
+    if (attempt !== loadAttempt) return;
+    status.classList.add('error');
+    status.textContent = error.message || 'Could not read these GeoTIFFs.';
+  } finally {
+    if (geoTiffLoad === controller) geoTiffLoad = undefined;
+  }
+});
+
 function selectBuiltInScene(next) {
   scene = next;
   mode = 'candidates';
@@ -116,9 +163,8 @@ function selectBuiltInScene(next) {
 }
 
 async function loadSatellite() {
-  const attempt = ++loadAttempt;
+  const attempt = beginLoad();
   const status = byId('status');
-  status.classList.remove('error');
   status.textContent = 'Loading satellite example…';
   try {
     if (!satelliteScene) {
@@ -138,9 +184,8 @@ async function loadSatellite() {
 
 byId('satellite').addEventListener('click', loadSatellite);
 byId('demo').addEventListener('click', () => {
-  loadAttempt++;
+  beginLoad();
   byId('status').textContent = '';
-  byId('status').classList.remove('error');
   selectBuiltInScene(sampleScene());
 });
 
